@@ -75,7 +75,8 @@ public class App
      * Gets all the current employees and salaries.
      * @return A list of all employees and salaries, or null if there is an error.
      */
-    public ArrayList<Employee> getAllSalaries()
+
+    public ArrayList<Employee> getSalaryByTitle(String title)
     {
         try
         {
@@ -83,10 +84,14 @@ public class App
             Statement stmt = con.createStatement();
             // Create string for SQL statement
             String strSelect =
-                    "SELECT employees.emp_no, employees.first_name, employees.last_name, salaries.salary "
-                            + "FROM employees, salaries "
-                            + "WHERE employees.emp_no = salaries.emp_no AND salaries.to_date = '9999-01-01' "
-                            + "ORDER BY employees.emp_no ASC";
+                    "SELECT employees.emp_no, employees.first_name, employees.last_name, salaries.salary\n" +
+                            "FROM employees, salaries, titles\n" +
+                            "WHERE employees.emp_no = salaries.emp_no\n" +
+                            "AND employees.emp_no = titles.emp_no\n" +
+                            "AND salaries.to_date = '9999-01-01'\n" +
+                            "AND titles.to_date = '9999-01-01'\n" +
+                            "AND titles.title = '"+ title +"'\n" +
+                            "ORDER BY employees.emp_no ASC";
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(strSelect);
             // Extract employee information
@@ -136,12 +141,12 @@ public class App
 
         // Connect to database
         a.connect();
-
+        String title = "Engineer";
         // Extract employee salary information
-        ArrayList<Employee> employees = a.getAllSalaries();
+        ArrayList<Employee> employees = a.getSalaryByTitle(title);
 
         // Test the size of the returned data - should be 240124
-        System.out.println(employees.size());
+        a.printSalaries(employees);
 
         // Disconnect from database
         a.disconnect();
